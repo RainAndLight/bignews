@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>大事件-后台登录页</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css">
+    <link rel="stylesheet" type="text/css" href="css/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+    <div class="main_wrap">
+        <div class="header">
+            <a href="#" class="logo"><img src="images/logo.png" alt=""></a>
+            <div class="copyright">CopyRight © 2019 深圳百秀信息技术股份有限公司<br>All Rights Reserved</div>
+        </div>
+
+        <div class="login_form_con">
+            <div class="login_title"></div>
+            <form class="login_form">
+                <i class="iconfont icon-user"></i>
+                <i class="iconfont icon-key"></i>
+                <input type="text" class="input_txt" placeholder="邮箱/手机号" name="username">
+                <input type="password" class="input_pass" placeholder="密码" name="password">
+                <input type="submit" class="input_sub" value="登 录">
+            </form>
+        </div>
+
+    </div>
+    <script src="./js/jquery-1.12.4.min.js"></script>
+</body>
+<script>
+    // var form = $('form')[0];
+    // var fd = new FormData(form);
+    $('.input_sub').click(function (e) {
+        e.preventDefault();
+        var a = $('.input_txt').val();
+        var b = $('.input_pass').val();
+        $.ajax({
+            type: 'post',
+            url: 'http://localhost:8080/admin/user/login',
+            dataType: 'json',
+            data: {
+                username: a,
+                password: b
+            },
+            success: function (res) {               
+                alert(res.msg)
+                if (res.code == 200) {
+                    location.href = 'index.html'
+                }
+
+            }
+        })
+    })
+
+</script>
+
+</html>
