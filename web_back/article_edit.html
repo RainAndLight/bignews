@@ -27,25 +27,21 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" value="文章标题文字">
+                        <input type="text" class="form-control" id="inputEmail3" value="文章标题文字" name="title">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <img src="images/pic06.jpg" class="article_cover">
-                        <input type="file" id="exampleInputFile">
+                        <img src="" class="article_cover">
+                        <input type="file" id="exampleInputFile" name="cover">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
-                            <option>类别一</option>
-                            <option>类别二</option>
-                            <option>类别三</option>
-                            <option selected>类别四</option>
-                            <option>类别五</option>
+                        <select class="form-control a" name="categoryId">
+                            <!-- 类别数据化 -->
                         </select>
                     </div>
                 </div>
@@ -54,9 +50,9 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" value="2019-05-17" id="dateinput">
+                            <input type="text" class="form-control"  id="dateinput" name="date">
                             <span class="input-group-btn">
-                                <button class="btn btn-default" type="button"
+                                <button  class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
                                         class="iconfont icon-icondate"></i></button>
                             </span>
@@ -66,12 +62,13 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容" value="文章内容">
+                        <input type="text" class="form-control" id="rich_content" placeholder="文章内容"
+                            value="文章内容">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="button" class="btn btn-success">修改</button>
                     </div>
                 </div>
             </form>
@@ -79,5 +76,84 @@
     </div>
 
 </body>
+<script src="../web_front/js/jquery-1.12.4.min.js"></script>
+<script src="../web_front/js/template-web.js"></script>
+
+
+
+
+<script>
+    // var id = location.search.substr(4);
+    // console.log($('.select').val());
+    var url = new URL('index.html' + location.search, 'http://www.baidu.com');
+    console.log(url);
+    
+    categoryId = url.searchParams.get('categoryId')
+    id = url.searchParams.get('id')
+    console.log(categoryId, id);
+
+
+    //获取修改的这个文章的各个值
+    $.get('http://localhost:8080/admin/article/search', { id: id }, function (res) {
+        console.log(res);
+        var title = res.data.title;
+        $('#inputEmail3').val(title)
+        var date = res.data.date;
+        $('#dateinput').val(date)
+        var content = res.data.content;
+        $('#rich_content').val(content)
+    }, 'json')
+</script>
+
+
+
+<!-- option 值 获取 -->
+<script id="muban" type="text/html">
+    {{each arr}}
+    <option name={{categoryId}} value={{$value.id}} {{if categoryId=$value.id}} selected{{/if}}>{{$value.name}}</option>
+    {{/each}}
+</script>
+<script>
+
+    $.get('http://localhost:8080/admin/category/list', function (res) {
+        var str = template('muban', {
+            arr: res.data
+        })
+        $('.a').append(str)
+    }, 'json')
+
+</script>
+
+
+
+
+
+
+<!-- 提交新的数据 -->
+<script>
+    $(".btn-success").click(function (e) {
+        e.preventDefault();
+
+        var form = new FormData($('form')[0])
+        form.append('id',id);
+        form.append('content',tinyMCE.activeEditor.getContent())
+
+        $.ajax({
+            processData:false,
+            contentType:false,
+            type: 'post',
+            url: 'http://localhost:8080/admin/article/edit',
+            data:form,
+            dataType: 'json',
+            success: function (res) {
+                alert(res.msg);
+                if (res.code == 200) {
+                    location.href = 'article_list.html'
+                }
+            }
+        })
+    })
+
+</script>
 
 </html>

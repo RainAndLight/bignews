@@ -36,21 +36,11 @@
                 <a href="javascript:;" class="level_one"><i class="fa fa-list-ul"></i>全部分类</a>
                 <ul class="level_two">
                     <li class="up"></li>
-                    <li><a href="#">最 新</a></li>
-                    <li><a href="#">科 技</a></li>
-                    <li><a href="#">股 市</a></li>
-                    <li><a href="#">商 品</a></li>
-                    <li><a href="#">外 汇</a></li>
-                    <li><a href="#">公 司</a></li>
+                    <!-- nav -->
                 </ul>
             </div>
             <ul class="left_menu fl">
-                <li><a href="#">最 新</a></li>
-                <li><a href="#">科 技</a></li>
-                <li><a href="#">股 市</a></li>
-                <li><a href="#">商 品</a></li>
-                <li><a href="#">外 汇</a></li>
-                <li><a href="#">公 司</a></li>
+                <!-- nav -->
             </ul>
             <ul class="right_menu fr">
                 <li><a href="#">科技专题</a></li>
@@ -65,7 +55,7 @@
             <div class="list_title">
                 <h3>科 技</h3>
             </div>
-
+            <div id="neirong"></div>
             <!-- <div class="common_news_list"> -->
             <!-- <a href="#" class="list_pic"><img src="images/pic09.jpg" alt=""></a>
                 <h4><a href="#">亚马逊金融试水中国？背后却是和华尔街的“金融战争” </a></h4>
@@ -198,6 +188,30 @@
 </script>
 
 
+<!-- 文章类别模板
+<script id="text_muban" type="text/html">
+    {{each arr}}
+    <div class="common_news_list">
+            <a href="article.html?id={{$value.id}}" class="list_pic"><img src={{$value.cover}} alt=""></a>
+            <h4>
+                <a href="article.html?id={{$value.id}}">{{$value.title}} </a>
+            </h4>
+            <p>{{$value.intro}}</p>
+            <div class="new_info">
+                <span>
+                    标签：{{$value.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{$value.read}} )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{$value.comments}} )
+                </span><b>发布于 {{$value.date}}</b>
+            </div>
+        </div>
+    {{/each}}
+</script> -->
+
+<script id="nav" type="text/html">
+    {{each arr}}
+        <li ><a class="type" name={{$value.id}} href="list.html?id={{$value.id}}">{{$value.name}}</a></li>
+    {{/each}}
+</script>
+
 <script>
     //index
     $('.logo').click(function (e) {
@@ -216,13 +230,14 @@
             var str = template('news', {
                 arr: res.data
             })
-            $('.list_title').after(str)
+            $('#neirong').html(str)
             console.log(res);
 
         }
     })
-
-
+    //文章类型
+    var id = location.search.substr(4);
+    var type = id;
     //搜索功能search_txt
     function search() {
         var searchVal = $('.search_txt').val();
@@ -231,12 +246,13 @@
             url: urlHeader + '/index/search',
             data: {
                 key: searchVal,
-                type: '',
+                type: type,
                 page: '',
                 perpage: '',
             },
             dataType: 'json',
             success: function (res) {
+
                 console.log(res);
                 $('.common_news_list').remove();
                 var str = template('search_muban', {
@@ -279,6 +295,34 @@
     })
 
 
+
+    //nav 
+    $.ajax({
+        type: 'get',
+        dataType: 'json',
+        url: urlHeader + '/index/category',
+        success: function (res) {
+            var str = template('nav', {
+                arr: res.data
+            })
+            $('.left_menu').eq(0).append(str);
+            $('.level_two').append(str);
+        }
+    })
+
+    // //id分类 文章显示
+    // id = location.search.substr(4)
+    // console.log(id);
+    // $.get('http://localhost:8080/index/search', { type: id }, function (res) {
+    //     // $('.common_news_list').remove();
+    //     var str = template('text_muban', {
+    //         arr: res.data.data
+    //     }, 'json')
+    //     $('#neirong').html(str)
+    //     // console.log(123);
+    //     console.log(res);
+
+    // })
 </script>
 
 </html>
